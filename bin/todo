@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+COMMAND="$1"
+shift
+
+case $COMMAND in
+  add)
+    MESSAGE="$@"
+    echo "- [ ] $MESSAGE" >> ~/.todo
+    ;;
+  list)
+    cat -n ~/.todo
+    ;;
+  done)
+    sed -i '' "$2s/\[ \]/[x]/" ~/.todo
+    ;;
+  undone)
+    sed -i '' "$2s/\[x\]/[ ]/" ~/.todo
+    ;;
+  *)
+    echo "Usage:
+      todo add [message]
+      todo list
+    "
+    ;;
+esac
