@@ -3,22 +3,32 @@
 COMMAND="$1"
 shift
 
+FILE="$HOME/.todo"
+
+function print_all
+{
+  cat -n $FILE
+}
+
 case $COMMAND in
   "")
-    cat -n ~/.todo
+    print_all
     ;;
   add)
     MESSAGE="$@"
-    echo "- [ ] $MESSAGE" >> ~/.todo
+    echo "- [ ] $MESSAGE" >> $FILE
     ;;
   list)
-    cat -n ~/.todo
+    print_all
     ;;
   "done")
-    sed -i '' "$1s/\[ \]/[x]/" ~/.todo
+    sed -i '' "$1s/\[ \]/[x]/" $FILE
     ;;
   undone)
-    sed -i '' "$1s/\[x\]/[ ]/" ~/.todo
+    sed -i '' "$1s/\[x\]/[ ]/" $FILE
+    ;;
+  filter)
+    print_all | grep "$1"
     ;;
   *)
     echo "Error: command '$COMMAND' unknown
