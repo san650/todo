@@ -4,6 +4,9 @@ COMMAND="$1"
 shift
 
 case $COMMAND in
+  "")
+    cat -n ~/.todo
+    ;;
   add)
     MESSAGE="$@"
     echo "- [ ] $MESSAGE" >> ~/.todo
@@ -11,16 +14,20 @@ case $COMMAND in
   list)
     cat -n ~/.todo
     ;;
-  done)
-    sed -i '' "$2s/\[ \]/[x]/" ~/.todo
+  "done")
+    sed -i '' "$1s/\[ \]/[x]/" ~/.todo
     ;;
   undone)
-    sed -i '' "$2s/\[x\]/[ ]/" ~/.todo
+    sed -i '' "$1s/\[x\]/[ ]/" ~/.todo
     ;;
   *)
-    echo "Usage:
-      todo add [message]
-      todo list
-    "
+    echo "Error: command '$COMMAND' unknown
+
+    Usage:
+        todo add [message]
+        todo list
+        todo done [n]
+        todo undone [n]"
+    exit 1
     ;;
 esac
