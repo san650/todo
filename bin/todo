@@ -10,15 +10,20 @@ function print_all
   cat -n $FILE
 }
 
+function print_pending
+{
+  cat -n $FILE | sed -n '/- \[ \]/p'
+}
+
 case $COMMAND in
   "")
-    print_all
+    print_pending
     ;;
   add)
     MESSAGE="$@"
     echo "- [ ] $MESSAGE" >> $FILE
     ;;
-  list)
+  all)
     print_all
     ;;
   "done")
@@ -28,14 +33,29 @@ case $COMMAND in
     sed -i '' "$1s/\[x\]/[ ]/" $FILE
     ;;
   filter)
-    print_all | grep "$1"
+    print_pending | grep "$1"
+    ;;
+  edit)
+    if [ ! -z "$1" ] && [ ! -z "$2" ]; then
+      LINE=$1
+      shift
+      MESSAGE="$@"
+
+      sed -i '' "${LINE}c\\
+- [ ] $MESSAGE
+" $FILE
+    else
+      vim $FILE
+    fi
+    ;;
+  raw)
+    cat $FILE
     ;;
   *)
     echo "Error: command '$COMMAND' unknown
 
     Usage:
         todo add [message]
-        todo list
         todo done [n]
         todo undone [n]"
     exit 1
