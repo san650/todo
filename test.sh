@@ -5,7 +5,9 @@ STATUS_EXIT=0
 TMP=$(mktemp -d -t todo-test)
 TODO="./bin/todo"
 TEST_COUNTER=0
-EXPECTED_OUTPUT_FILE="$TMP/test-expected"
+CURRENT_TEST=
+CURRENT_EXPECTED_OUTPUT=
+CURRENT_ACTUAL_OUTPUT=
 
 function todo {
   TODO_FILE="$TMP/test-$TEST_COUNTER" $TODO $@
@@ -44,58 +46,63 @@ function finish()
   exit $STATUS_EXIT
 }
 
-
-
-function write_expected_output {
-  cat > $EXPECTED_OUTPUT_FILE
+function spec {
+  TEST_COUNTER+=1
+  CURRENT_TEST="$1"
+  CURRENT_EXPECTED_OUTPUT="$TMP/test-$TEST_COUNTER-expected-output"
+  CURRENT_ACTUAL_OUTPUT="$TMP/test-$TEST_COUNTER-actual-output"
 }
 
-function do_test {
-  local TEST_NAME="$1"
+function expect {
   local TEST=()
-
-  TEST_COUNTER+=1
 
   while read -r line; do
     TEST+="$line;"
   done
 
-  local TEST_ACTUAL=$(eval ${TEST[@]})
-  local TEST_EXPECTED=$(cat $EXPECTED_OUTPUT_FILE)
+  eval ${TEST[@]} > $CURRENT_ACTUAL_OUTPUT
+}
 
-  if [ "$TEST_EXPECTED" == "${TEST_ACTUAL[*]}" ]; then
-    tap_ok "$TEST_NAME"
+function to_output {
+  local TEST_EXPECTED=$(cat)
+  local TEST_ACTUAL=$(cat $CURRENT_ACTUAL_OUTPUT)
+
+  if [ "$TEST_EXPECTED" == "$TEST_ACTUAL" ]; then
+    tap_ok "$CURRENT_TEST"
   else
-    tap_not_ok "$TEST_NAME" "$TEST_EXPECTED" "$TEST_ACTUAL"
+    tap_not_ok "$CURRENT_TEST" "$TEST_EXPECTED" "$TEST_ACTUAL"
   fi
 }
 
 echo "1..${TOTAL_TESTS}"
 
-write_expected_output << EOT
-EOT
-do_test "empty todo list" "" <<EOT
+spec "empty todo list"
+expect << EOT
 todo
 EOT
-
-write_expected_output << EOT
-     1	- [ ] foo
+to_output <<EOT
 EOT
-do_test "add one todo item" "${EXPECTED[@]}" <<EOT
+
+spec "add one todo item"
+expect << EOT
 todo add foo
 todo
 EOT
-
-write_expected_output << EOT
+to_output << EOT
      1	- [ ] foo
-     2	- [ ] bar
-     3	- [ ] baz
 EOT
-do_test "add multiple items" << EOT
+
+spec "add multiple items"
+expect << EOT
 todo add foo
 todo add bar
 todo add baz
 todo
+EOT
+to_output << EOT
+     1	- [ ] foo
+     2	- [ ] bar
+     3	- [ ] baz
 EOT
 
 spec "can mark a todo as done"

@@ -3,8 +3,12 @@
 COMMAND="$1"
 shift
 
-FILE="$HOME/.todo"
+FILE=${TODO_FILE:-$HOME/.todo}
 FILTER="$TODO_FILTER"
+
+if [ ! -f "$FILE" ]; then
+  touch "$FILE"
+fi
 
 function print_all
 {
