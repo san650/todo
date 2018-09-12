@@ -37,10 +37,10 @@ case $COMMAND in
     print_all
     ;;
   "done")
-    sed -i '' "$1s/\[ \]/[x]/" $FILE
+    sed -i.bak "$1s/\[ \]/[x]/" $FILE
     ;;
   undone)
-    sed -i '' "$1s/\[x\]/[ ]/" $FILE
+    sed -i.bak "$1s/\[x\]/[ ]/" $FILE
     ;;
   filter)
     print_pending | grep "$1"
@@ -51,7 +51,7 @@ case $COMMAND in
       shift
       MESSAGE="$@"
 
-      sed -i '' "${LINE}c\\
+      sed -i.bak "${LINE}c\\
 - [ ] $MESSAGE
 " $FILE
     else
