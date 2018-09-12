@@ -1,0 +1,3 @@
+language: ruby
+install: true # skip installation step
+script: ./test.sh
