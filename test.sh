@@ -2,7 +2,7 @@
 
 TOTAL_TESTS=3
 STATUS_EXIT=0
-TMP=$(mktemp -d -t todo-test)
+TMP=$(mktemp -d -t todo-test-XXXXXXX)
 TODO="./bin/todo"
 TEST_COUNTER=0
 CURRENT_TEST=
