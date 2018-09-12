@@ -65,7 +65,11 @@ case $COMMAND in
     echo "Error: command '$COMMAND' unknown
 
     Usage:
+        todo
         todo add [message]
+        todo all
+        todo filter [keywords]
+        todo edit [n] [message]
         todo done [n]
         todo undone [n]"
     exit 1
