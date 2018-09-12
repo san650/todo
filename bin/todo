@@ -4,6 +4,7 @@ COMMAND="$1"
 shift
 
 FILE="$HOME/.todo"
+FILTER="$TODO_FILTER"
 
 function print_all
 {
@@ -12,7 +13,12 @@ function print_all
 
 function print_pending
 {
-  cat -n $FILE | sed -n '/- \[ \]/p'
+  if [ ! -z "$FILTER" ]; then
+    echo "Filtering by: $FILTER"
+    echo
+  fi
+
+  cat -n $FILE | sed -n '/- \[ \]/p' | grep "$FILTER"
 }
 
 case $COMMAND in
