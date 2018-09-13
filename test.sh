@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TOTAL_TESTS=3
+TOTAL_TESTS=9
 STATUS_EXIT=0
 TMP=$(mktemp -d -t todo-test-XXXXXXX)
 TODO="./bin/todo"
