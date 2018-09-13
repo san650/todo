@@ -36,8 +36,10 @@ $ todo
 
 Supported environment variables
 
-`TODO_FILE` - database file to use
-`TODO_FILTER` - default filter, e.g. `TODO_FILTER=PR-810 todo`
+| Environment Variable | Description                                    |
+| -------------------- | ---------------------------------------------- |
+| `TODO_FILE`          | Database file to use, default is ~/.todo       |
+| `TODO_FILTER`        | Default filter, e.g. `TODO_FILTER=PR-810 todo` |
 
 ## License
 
