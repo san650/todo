@@ -31,6 +31,8 @@ $ todo
 | `edit [n] [message]` | Change ToDo item number `n` message with `message` |
 | `done [n]`           | Marks ToDo item number `n` as done                 |
 | `undone [n]`         | Marks ToDo item number `n` as pending              |
+| `checkout [name]`    | Checkout (or create) project                       |
+| `list`               | List all projects                                  |
 
 ## Configuration options
 
@@ -38,7 +40,7 @@ Supported environment variables
 
 | Environment Variable | Description                                    |
 | -------------------- | ---------------------------------------------- |
-| `TODO_FILE`          | Database file to use, default is ~/.todo       |
+| `TODO_PATH`          | Store folder, default is ~/.todo/              |
 | `TODO_FILTER`        | Default filter, e.g. `TODO_FILTER=PR-810 todo` |
 
 ## License

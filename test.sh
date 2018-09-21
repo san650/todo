@@ -10,7 +10,7 @@ CURRENT_EXPECTED_OUTPUT=
 CURRENT_ACTUAL_OUTPUT=
 
 function todo {
-  TODO_FILE="$TMP/test-$TEST_COUNTER" $TODO $@
+  TODO_PATH="$TMP" $TODO $@
 }
 
 function cleanup {
@@ -47,6 +47,7 @@ function finish()
 }
 
 function spec {
+  TMP=$(mktemp -d -t todo-test-XXXXXXX)
   TEST_COUNTER+=1
   CURRENT_TEST="$1"
   CURRENT_EXPECTED_OUTPUT="$TMP/test-$TEST_COUNTER-expected-output"

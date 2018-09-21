@@ -3,7 +3,8 @@
 COMMAND="$1"
 shift
 
-FILE=${TODO_FILE:-$HOME/.todo}
+FOLDER=${TODO_PATH:-$HOME/.todo}
+FILE="$FOLDER/index"
 FILTER="$TODO_FILTER"
 
 if [ ! -f "$FILE" ]; then
@@ -25,6 +26,45 @@ function print_pending
   cat -n $FILE | sed -n '/- \[ \]/p' | grep "$FILTER"
 }
 
+function commit
+{
+  (cd "$FOLDER" \
+    && git add "$FILE" \
+    && git commit -m "$1" 2>&1 > /dev/null)
+}
+
+function init_repo
+{
+  if [ ! -d "$FOLDER" ]; then
+    mkdir -p "$FOLDER"
+    touch "$FILE"
+  fi
+
+  if [ ! -d "$FOLDER/.git" ]; then
+    (cd "$FOLDER" \
+      && git init --quiet \
+      && git add --all \
+      && git commit --quiet --message "Init new ToDo repo")
+  fi
+}
+
+function checkout
+{
+  (cd "$FOLDER" \
+    && git checkout "$1" 2>&1 > /dev/null \
+    || git checkout -b "$1")
+}
+
+function list_branches
+{
+  (
+    cd "$FOLDER" \
+      && git branch
+  )
+}
+
+init_repo
+
 case $COMMAND in
   "")
     print_pending
@@ -32,15 +72,18 @@ case $COMMAND in
   add)
     MESSAGE="$@"
     echo "- [ ] $MESSAGE" >> $FILE
+    commit "Add ToDo item"
     ;;
   all)
     print_all
     ;;
   "done")
     sed -i.bak "$1s/\[ \]/[x]/" $FILE
+    commit "Completed ToDo item #$1"
     ;;
   undone)
     sed -i.bak "$1s/\[x\]/[ ]/" $FILE
+    commit "Undone ToDo item #$1"
     ;;
   filter)
     print_pending | grep "$1"
@@ -54,13 +97,25 @@ case $COMMAND in
       sed -i.bak "${LINE}c\\
 - [ ] $MESSAGE
 " $FILE
+    commit "Edit ToDo item #$LINE"
     else
       vim $FILE
+      commit "Custom edit"
     fi
     ;;
   raw)
     cat $FILE
     ;;
+
+
+  checkout)
+    checkout "$1"
+    ;;
+
+  list)
+    list_branches
+    ;;
+
   *)
     echo "Error: command '$COMMAND' unknown
 
@@ -71,7 +126,10 @@ case $COMMAND in
         todo filter [keywords]
         todo edit [n] [message]
         todo done [n]
-        todo undone [n]"
+        todo undone [n]
+        todo checkout [name]
+        todo list
+    "
     exit 1
     ;;
 esac
