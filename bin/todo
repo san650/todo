@@ -12,19 +12,43 @@ if [ ! -f "$FILE" ]; then
   touch "$FILE"
 fi
 
+function print_header
+{
+  echo
+  echo "# Project: $PROJECT ~"
+}
+
 function print_all
 {
+  print_header
+  echo
   cat -n $FILE
 }
 
 function print_pending
 {
+  print_header
+
   if [ ! -z "$FILTER" ]; then
-    echo "Filtering by: $FILTER"
-    echo
+    echo "# Filtering by: $FILTER"
   fi
 
+  echo
+
   cat -n $FILE | sed -n '/- \[ \]/p' | grep "$FILTER"
+}
+
+function print_filtered
+{
+  print_header
+
+  if [ ! -z "$1" ]; then
+    echo "# Filtering by: $1"
+  fi
+
+  echo
+
+  cat -n $FILE | sed -n '/- \[ \]/p' | grep "$1"
 }
 
 function commit
@@ -80,7 +104,13 @@ case $COMMAND in
     commit "Undone ToDo item #$1"
     ;;
   filter)
-    print_pending | grep "$1"
+    if [ ! -z "$1" ]; then
+      print_filtered "$1"
+    else
+      echo "ERROR: expected filter param"
+      echo "e.g. todo filter foo"
+      exit 1
+    fi
     ;;
   edit)
     if [ ! -z "$1" ] && [ ! -z "$2" ]; then
@@ -104,7 +134,6 @@ case $COMMAND in
   list)
     list_projects
     ;;
-
   *)
     echo "Error: command '$COMMAND' unknown
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TOTAL_TESTS=9
+TOTAL_TESTS=10
 STATUS_EXIT=0
 TMP=$(mktemp -d -t todo-test-XXXXXXX)
 TODO="./bin/todo"
@@ -82,6 +82,9 @@ expect << EOT
 todo
 EOT
 to_output <<EOT
+
+# Project: default ~
+
 EOT
 
 spec "add one todo item"
@@ -90,6 +93,9 @@ todo add foo
 todo
 EOT
 to_output << EOT
+
+# Project: default ~
+
      1	- [ ] foo
 EOT
 
@@ -101,6 +107,9 @@ todo add baz
 todo
 EOT
 to_output << EOT
+
+# Project: default ~
+
      1	- [ ] foo
      2	- [ ] bar
      3	- [ ] baz
@@ -115,6 +124,9 @@ todo done 2
 todo
 EOT
 to_output << EOT
+
+# Project: default ~
+
      1	- [ ] foo
      3	- [ ] baz
 EOT
@@ -129,6 +141,9 @@ todo undone 2
 todo
 EOT
 to_output << EOT
+
+# Project: default ~
+
      1	- [ ] foo
      2	- [ ] bar
      3	- [ ] baz
@@ -143,6 +158,9 @@ todo done 2
 todo all
 EOT
 to_output << EOT
+
+# Project: default ~
+
      1	- [ ] foo
      2	- [x] bar
      3	- [ ] baz
@@ -156,8 +174,21 @@ todo add baz
 todo filter ba
 EOT
 to_output << EOT
+
+# Project: default ~
+# Filtering by: ba
+
      2	- [ ] bar
      3	- [ ] baz
+EOT
+
+spec "filter returns error when no param"
+expect << EOT
+todo filter
+EOT
+to_output << EOT
+ERROR: expected filter param
+e.g. todo filter foo
 EOT
 
 spec "filters to do list with TODO_FILTER env var"
@@ -165,10 +196,12 @@ expect << EOT
 todo add foo
 todo add bar
 todo add baz
-TODO_FILTER=ba todo filter
+TODO_FILTER=ba todo
 EOT
 to_output << EOT
-Filtering by: ba
+
+# Project: default ~
+# Filtering by: ba
 
      2	- [ ] bar
      3	- [ ] baz
@@ -183,6 +216,9 @@ todo edit 2 qux
 todo
 EOT
 to_output << EOT
+
+# Project: default ~
+
      1	- [ ] foo
      2	- [ ] qux
      3	- [ ] baz
