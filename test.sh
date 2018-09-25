@@ -31,12 +31,12 @@ function tap_not_ok()
   # print diagnostics
   echo "# EXPECTED:"
   echo "#"
-  echo "$2" | sed 's/^/#~~~/'
+  echo "$2" | sed 's/^/~/'
 
   echo "#"
   echo "# ACTUAL:"
   echo "# "
-  echo "$3" | sed 's/^/#~~~/'
+  echo "$3" | sed 's/^/~/'
 
   STATUS_EXIT=1
 }
