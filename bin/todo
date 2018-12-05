@@ -5,11 +5,11 @@ shift
 
 FOLDER=${TODO_PATH:-$HOME/.todo}
 PROJECT=${TODO_PROJECT:-default}
-FILE="$FOLDER/$PROJECT"
+WRITE_FILE="$FOLDER/$PROJECT"
 FILTER="$TODO_FILTER"
 
-if [ ! -f "$FILE" ]; then
-  touch "$FILE"
+if [ ! -f "$WRITE_FILE" ]; then
+  touch "$WRITE_FILE"
 fi
 
 function print_header
@@ -22,7 +22,7 @@ function print_all
 {
   print_header
   echo
-  cat -n $FILE
+  cat -n "$WRITE_FILE"
 }
 
 function print_pending
@@ -35,7 +35,7 @@ function print_pending
 
   echo
 
-  cat -n $FILE | sed -n '/- \[ \]/p' | grep "$FILTER"
+  cat -n "$WRITE_FILE" | sed -n '/- \[ \]/p' | grep "$FILTER"
 }
 
 function print_filtered
@@ -48,13 +48,13 @@ function print_filtered
 
   echo
 
-  cat -n $FILE | sed -n '/- \[ \]/p' | grep "$1"
+  cat -n "$WRITE_FILE" | sed -n '/- \[ \]/p' | grep "$1"
 }
 
 function commit
 {
   (cd "$FOLDER" \
-    && git add "$FILE" \
+    && git add "$WRITE_FILE" \
     && git commit -m "$1" 2>&1 > /dev/null)
 }
 
@@ -62,7 +62,7 @@ function init_repo
 {
   if [ ! -d "$FOLDER" ]; then
     mkdir -p "$FOLDER"
-    touch "$FILE"
+    touch "$WRITE_FILE"
   fi
 
   if [ ! -d "$FOLDER/.git" ]; then
@@ -81,6 +81,28 @@ function list_projects
   )
 }
 
+function print_help
+{
+  echo '
+    Usage:
+        todo                    - List uncompleted items
+        todo add [message]      - Add a new todo item
+        todo all                - List all todo items (even the completed ones)
+        todo filter [keywords]  - Filter the list of todo items
+        todo edit [n] [message] - If [n] and [message] are given, update a todo item, else it opens DB file using vim
+        todo done [n]           - Marks a todo item as completed
+        todo undone [n]         - Marks a todo item as uncompleted
+        todo projects           - List existing projects
+        todo raw                - Shows the raw DB file
+
+    ENV VARS
+
+    TODO_PATH    - Set DB folder path, uses "$HOME/.todo" by default.
+    TODO_PROJECT - Set current DB file to use, uses "default" by default.
+    TODO_FILTER  - Set default filter
+  '
+}
+
 init_repo
 
 case $COMMAND in
@@ -89,18 +111,18 @@ case $COMMAND in
     ;;
   add)
     MESSAGE="$@"
-    echo "- [ ] $MESSAGE" >> $FILE
+    echo "- [ ] $MESSAGE" >> "$WRITE_FILE"
     commit "Add ToDo item"
     ;;
   all)
     print_all
     ;;
   "done")
-    sed -i.bak "$1s/\[ \]/[x]/" $FILE
+    sed -i.bak "$1s/\[ \]/[x]/" "$WRITE_FILE"
     commit "Completed ToDo item #$1"
     ;;
   undone)
-    sed -i.bak "$1s/\[x\]/[ ]/" $FILE
+    sed -i.bak "$1s/\[x\]/[ ]/" "$WRITE_FILE"
     commit "Undone ToDo item #$1"
     ;;
   filter)
@@ -120,33 +142,27 @@ case $COMMAND in
 
       sed -i.bak "${LINE}c\\
 - [ ] $MESSAGE
-" $FILE
+" "$WRITE_FILE"
     commit "Edit ToDo item #$LINE"
     else
-      vim $FILE
+      vim "$WRITE_FILE"
       commit "Custom edit"
     fi
     ;;
   raw)
-    cat $FILE
+    cat "$WRITE_FILE"
     ;;
 
-  list)
+  projects)
     list_projects
     ;;
-  *)
-    echo "Error: command '$COMMAND' unknown
+  help)
+    print_help
+    ;;
+    *)
+    echo "Error: command '$COMMAND' unknown"
+    print_help
 
-    Usage:
-        todo
-        todo add [message]
-        todo all
-        todo filter [keywords]
-        todo edit [n] [message]
-        todo done [n]
-        todo undone [n]
-        todo list
-    "
     exit 1
     ;;
 esac
