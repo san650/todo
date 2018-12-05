@@ -8,10 +8,6 @@ PROJECT=${TODO_PROJECT:-default}
 WRITE_FILE="$FOLDER/$PROJECT"
 FILTER="$TODO_FILTER"
 
-if [ ! -f "$WRITE_FILE" ]; then
-  touch "$WRITE_FILE"
-fi
-
 function print_header
 {
   echo
@@ -60,16 +56,29 @@ function commit
 
 function init_repo
 {
+  # DB folder
   if [ ! -d "$FOLDER" ]; then
     mkdir -p "$FOLDER"
-    touch "$WRITE_FILE"
   fi
 
+  # .gitignore file
+  if [ ! -d "$FOLDER/.gitignore" ]; then
+    cat <<-EOF > "$FOLDER/.gitignore"
+*.bak
+EOF
+  fi
+
+  # init repo
   if [ ! -d "$FOLDER/.git" ]; then
     (cd "$FOLDER" \
       && git init --quiet \
       && git add --all \
       && git commit --quiet --message "Init new ToDo repo")
+  fi
+
+  # init project file
+  if [ ! -f "$WRITE_FILE" ]; then
+    touch "$WRITE_FILE"
   fi
 }
 
@@ -77,7 +86,7 @@ function list_projects
 {
   (
     cd "$FOLDER" \
-      && ls -1
+      && ls -1 | grep --invert-match ".bak$"
   )
 }
 
@@ -103,11 +112,13 @@ function print_help
   '
 }
 
+# Initialize repo and project if needed
 init_repo
 
 case $COMMAND in
   "")
     print_pending
+    echo # empty line at the bottom
     ;;
   add)
     MESSAGE="$@"
@@ -116,6 +127,7 @@ case $COMMAND in
     ;;
   all)
     print_all
+    echo # empty line at the bottom
     ;;
   "done")
     sed -i.bak "$1s/\[ \]/[x]/" "$WRITE_FILE"
@@ -128,6 +140,7 @@ case $COMMAND in
   filter)
     if [ ! -z "$1" ]; then
       print_filtered "$1"
+      echo # empty line at the bottom
     else
       echo "ERROR: expected filter param"
       echo "e.g. todo filter foo"
