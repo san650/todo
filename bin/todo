@@ -3,8 +3,9 @@
 COMMAND="$1"
 shift
 
+DEFAULT=default
 FOLDER=${TODO_PATH:-$HOME/.todo}
-PROJECT=${TODO_PROJECT:-default}
+PROJECT=${TODO_PROJECT:-$DEFAULT}
 WRITE_FILE="$FOLDER/$PROJECT"
 FILTER="$TODO_FILTER"
 
@@ -66,6 +67,10 @@ function init_repo
     cat <<-EOF > "$FOLDER/.gitignore"
 *.bak
 EOF
+  fi
+
+  if [ ! -d "$FOLDER/$DEFAULT" ]; then
+    touch "$FOLDER/$DEFAULT"
   fi
 
   # init repo
