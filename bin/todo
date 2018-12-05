@@ -86,7 +86,7 @@ function list_projects
 {
   (
     cd "$FOLDER" \
-      && ls -1 | grep --invert-match ".bak$"
+      && git ls-files | grep --invert-match ".gitignore" | grep --invert-match ".bak$"
   )
 }
 
