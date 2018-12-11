@@ -43,6 +43,27 @@ Supported environment variables
 | `TODO_PATH`          | Store folder, default is ~/.todo/              |
 | `TODO_FILTER`        | Default filter, e.g. `TODO_FILTER=PR-810 todo` |
 
+## Shell prompt
+
+Adding current To Do project to the bash prompt.
+
+```sh
+function __todo_project
+{
+  echo "${TODO_PROJECT:-default}"
+}
+
+export PS1='[$(__todo_project)] $'
+```
+
+This will include the current project in the shell prompt
+
+```
+[default] $
+[default] $ export TODO_PROJECT=my-awesome-project
+[my-awesome-project] $
+```
+
 ## License
 
 `todo` is licensed under the MIT license.
