@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-TOTAL_TESTS=10
+# TAP = Test Anything Protocol http://testanything.org/
+
 STATUS_EXIT=0
 TMP=$(mktemp -d -t todo-test-XXXXXXX)
 TODO="./bin/todo"
@@ -8,6 +9,13 @@ TEST_COUNTER=0
 CURRENT_TEST=
 CURRENT_EXPECTED_OUTPUT=
 CURRENT_ACTUAL_OUTPUT=
+
+function plan {
+  # Count the numbers of `spec` calls in the file
+  local TOTAL=$(grep --count "^spec " "$0")
+
+  echo "1..${TOTAL}"
+}
 
 function todo {
   TODO_PATH="$TMP" $TODO $@
@@ -21,22 +29,19 @@ trap cleanup EXIT
 
 function tap_ok()
 {
-  echo "ok $1"
+  echo "ok $TEST_COUNTER $1"
 }
 
 function tap_not_ok()
 {
-  echo "not ok $1"
+  echo "not ok $TEST_COUNTER $1"
 
   # print diagnostics
-  echo "# EXPECTED:"
+  echo "#      EXPECTED:"
+  echo "$2" | sed 's/^/#      /'
   echo "#"
-  echo "$2" | sed 's/^/~/'
-
-  echo "#"
-  echo "# ACTUAL:"
-  echo "# "
-  echo "$3" | sed 's/^/~/'
+  echo "#      ACTUAL:"
+  echo "$3" | sed 's/^/#      /'
 
   STATUS_EXIT=1
 }
@@ -47,8 +52,9 @@ function finish()
 }
 
 function spec {
+  ((TEST_COUNTER++))
+
   TMP=$(mktemp -d -t todo-test-XXXXXXX)
-  TEST_COUNTER+=1
   CURRENT_TEST="$1"
   CURRENT_EXPECTED_OUTPUT="$TMP/test-$TEST_COUNTER-expected-output"
   CURRENT_ACTUAL_OUTPUT="$TMP/test-$TEST_COUNTER-actual-output"
@@ -75,7 +81,7 @@ function to_output {
   fi
 }
 
-echo "1..${TOTAL_TESTS}"
+plan
 
 spec "empty todo list"
 expect << EOT
