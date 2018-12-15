@@ -67,6 +67,11 @@ function spec {
 function expect {
   local TEST=$(cat)
 
+  # Cleanup all variables before running a test
+  TODO_PATH=
+  TODO_PROJECT=
+  TODO_FILTER=
+
   eval "$TEST" > $CURRENT_ACTUAL_OUTPUT
 }
 
