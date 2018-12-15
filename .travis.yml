@@ -1,3 +1,6 @@
 language: ruby
+branches:
+  only:
+    - "master"
 install: true # skip installation step
 script: ./test.sh
