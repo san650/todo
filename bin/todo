@@ -12,19 +12,21 @@ FILTER="$TODO_FILTER"
 function print_header
 {
   echo
-  echo "# Project: $PROJECT ~"
+  echo "# Project: $1 ~"
 }
 
 function print_all
 {
-  print_header
-  echo
-  cat -n "$WRITE_FILE"
+  for project in $(list_projects); do
+    print_header "$project"
+    echo
+    cat -n "$FOLDER/$project"
+  done
 }
 
 function print_pending
 {
-  print_header
+  print_header "$PROJECT"
 
   if [ ! -z "$FILTER" ]; then
     echo "# Filtering by: $FILTER"
@@ -37,7 +39,7 @@ function print_pending
 
 function print_filtered
 {
-  print_header
+  print_header "$PROJECT"
 
   if [ ! -z "$1" ]; then
     echo "# Filtering by: $1"

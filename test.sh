@@ -3,7 +3,8 @@
 # TAP = Test Anything Protocol http://testanything.org/
 
 STATUS_EXIT=0
-TMP=$(mktemp -d -t todo-test-XXXXXXX)
+TMP=
+TMP_OUTPUT=
 TODO="./bin/todo"
 TEST_COUNTER=0
 CURRENT_TEST=
@@ -22,7 +23,8 @@ function todo {
 }
 
 function cleanup {
-  rm -rf $TMP
+  rm -rf "$TMP"
+  rm -rf "$TMP_OUTPUT"
 }
 
 trap cleanup EXIT
@@ -55,19 +57,17 @@ function spec {
   ((TEST_COUNTER++))
 
   TMP=$(mktemp -d -t todo-test-XXXXXXX)
+  TMP_OUTPUT="$(mktemp -d -t todo-test-output-XXXXXXX)/output"
   CURRENT_TEST="$1"
   CURRENT_EXPECTED_OUTPUT="$TMP/test-$TEST_COUNTER-expected-output"
-  CURRENT_ACTUAL_OUTPUT="$TMP/test-$TEST_COUNTER-actual-output"
+  CURRENT_ACTUAL_OUTPUT="$TMP_OUTPUT/test-$TEST_COUNTER-actual-output"
+  mkdir -p "$TMP_OUTPUT"
 }
 
 function expect {
-  local TEST=()
+  local TEST=$(cat)
 
-  while read -r line; do
-    TEST+="$line;"
-  done
-
-  eval ${TEST[@]} > $CURRENT_ACTUAL_OUTPUT
+  eval "$TEST" > $CURRENT_ACTUAL_OUTPUT
 }
 
 function to_output {
@@ -87,7 +87,7 @@ spec "empty todo list"
 expect << EOT
 todo
 EOT
-to_output <<EOT
+to_output << EOT
 
 # Project: default ~
 
@@ -161,6 +161,8 @@ todo add foo
 todo add bar
 todo add baz
 todo done 2
+TODO_PROJECT=my-pet-project todo add foo
+TODO_PROJECT=my-pet-project todo done 1
 todo all
 EOT
 to_output << EOT
@@ -170,6 +172,11 @@ to_output << EOT
      1	- [ ] foo
      2	- [x] bar
      3	- [ ] baz
+
+# Project: my-pet-project ~
+
+     1	- [x] foo
+
 EOT
 
 spec "filters to do list"
@@ -228,6 +235,19 @@ to_output << EOT
      1	- [ ] foo
      2	- [ ] qux
      3	- [ ] baz
+EOT
+
+spec "uses alternate project with TODO_PROJECT"
+expect << EOT
+todo add foo
+TODO_PROJECT=alternate-project todo add bar
+TODO_PROJECT=alternate-project todo
+EOT
+to_output << EOT
+
+# Project: alternate-project ~
+
+     1	- [ ] bar
 EOT
 
 finish
