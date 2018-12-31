@@ -65,13 +65,13 @@ function init_repo
   fi
 
   # .gitignore file
-  if [ ! -d "$FOLDER/.gitignore" ]; then
+  if [ ! -f "$FOLDER/.gitignore" ]; then
     cat <<-EOF > "$FOLDER/.gitignore"
 *.bak
 EOF
   fi
 
-  if [ ! -d "$FOLDER/$DEFAULT" ]; then
+  if [ ! -f "$FOLDER/$DEFAULT" ]; then
     touch "$FOLDER/$DEFAULT"
   fi
 
@@ -117,6 +117,14 @@ function print_help
     TODO_PROJECT - Set current DB file to use, uses "default" by default.
     TODO_FILTER  - Set default filter
   '
+}
+
+function delete {
+  if [ -f "$FOLDER/$1" ]; then
+    (cd "$FOLDER" \
+      && git rm --quiet "$1" \
+      && git commit --quiet --message "Delete project $1") 2>&1
+  fi
 }
 
 # Initialize repo and project if needed
@@ -179,7 +187,10 @@ case $COMMAND in
   help)
     print_help
     ;;
-    *)
+  delete)
+    delete "$1"
+    ;;
+  *)
     echo "Error: command '$COMMAND' unknown"
     print_help
 

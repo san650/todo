@@ -67,7 +67,12 @@ function spec {
 function expect {
   local TEST=$(cat)
 
-  eval "$TEST" > $CURRENT_ACTUAL_OUTPUT
+  # Cleanup all variables before running a test
+  TODO_PATH=
+  TODO_PROJECT=
+  TODO_FILTER=
+
+  eval "$TEST" 2>&1 > $CURRENT_ACTUAL_OUTPUT
 }
 
 function to_output {
@@ -248,6 +253,25 @@ to_output << EOT
 # Project: alternate-project ~
 
      1	- [ ] bar
+EOT
+
+spec "deletes a project"
+expect << EOT
+TODO_PROJECT=alternate-project todo add bar
+todo delete alternate-project
+todo projects
+EOT
+to_output << EOT
+default
+EOT
+
+spec "deletes a project doesn't fail if project doesn't exist"
+expect << EOT
+todo delete alternate-project
+todo projects
+EOT
+to_output << EOT
+default
 EOT
 
 finish
