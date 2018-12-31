@@ -61,7 +61,12 @@ Adding current To Do project to bash prompt.
 ```sh
 function __todo_project
 {
-  echo "${TODO_PROJECT:-default}"
+  # Hackish way to check if TODO_PROJECT variable is exported
+  if [ -n "$(compgen -e -X '!TODO_PROJECT')" ]; then
+    echo "${TODO_PROJECT:-default}"
+  else
+    echo "default"
+  fi
 }
 
 export PS1='[$(__todo_project)] $'
