@@ -65,13 +65,13 @@ function init_repo
   fi
 
   # .gitignore file
-  if [ ! -d "$FOLDER/.gitignore" ]; then
+  if [ ! -f "$FOLDER/.gitignore" ]; then
     cat <<-EOF > "$FOLDER/.gitignore"
 *.bak
 EOF
   fi
 
-  if [ ! -d "$FOLDER/$DEFAULT" ]; then
+  if [ ! -f "$FOLDER/$DEFAULT" ]; then
     touch "$FOLDER/$DEFAULT"
   fi
 
