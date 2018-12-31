@@ -81,6 +81,22 @@ This will include the current project in the shell prompt
 [my-awesome-project] $
 ```
 
+## Shell autocomplete
+
+Add the following script to your `.bashrc` or `.bash_profile` configuration
+file.
+
+```sh
+function _todo {
+  local cur=${COMP_WORDS[COMP_CWORD]}
+  local options='add all delete done edit filter help projects raw undone'
+
+  COMPREPLY=( $(compgen -W "$options" -- $cur) )
+}
+
+complete -o bashdefault -o default -o nospace -F _todo todo
+```
+
 ## License
 
 `todo` is licensed under the MIT license.
