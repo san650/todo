@@ -255,4 +255,23 @@ to_output << EOT
      1	- [ ] bar
 EOT
 
+spec "deletes a project"
+expect << EOT
+TODO_PROJECT=alternate-project todo add bar
+todo delete alternate-project
+todo projects
+EOT
+to_output << EOT
+default
+EOT
+
+spec "deletes a project doesn't fail if project doesn't exist"
+expect << EOT
+todo delete alternate-project
+todo projects
+EOT
+to_output << EOT
+default
+EOT
+
 finish

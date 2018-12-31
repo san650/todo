@@ -119,6 +119,14 @@ function print_help
   '
 }
 
+function delete {
+  if [ -f "$FOLDER/$1" ]; then
+    (cd "$FOLDER" \
+      && git rm --quiet "$1" \
+      && git commit --quiet --message "Delete project $1") 2>&1
+  fi
+}
+
 # Initialize repo and project if needed
 init_repo
 
@@ -179,7 +187,10 @@ case $COMMAND in
   help)
     print_help
     ;;
-    *)
+  delete)
+    delete "$1"
+    ;;
+  *)
     echo "Error: command '$COMMAND' unknown"
     print_help
 
