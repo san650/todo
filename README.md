@@ -41,6 +41,7 @@ $
 | `done [n]`           | Mark ToDo item number `n` as done                         |
 | `undone [n]`         | Mark ToDo item number `n` as pending                      |
 | `projects`           | List all projects                                         |
+| `delete [project]`   | Delete a project and all to do items it contains          |
 | `raw`                | Prints current project file                               |
 | `help`               | Show help                                                 |
 

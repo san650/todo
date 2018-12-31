@@ -109,6 +109,7 @@ function print_help
         todo done [n]           - Marks a todo item as completed
         todo undone [n]         - Marks a todo item as uncompleted
         todo projects           - List existing projects
+        todo delete [project]   - Delete a project and all to do items it contains
         todo raw                - Shows the raw DB file
 
     ENV VARS
