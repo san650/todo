@@ -72,7 +72,7 @@ function expect {
   TODO_PROJECT=
   TODO_FILTER=
 
-  eval "$TEST" > $CURRENT_ACTUAL_OUTPUT
+  eval "$TEST" 2>&1 > $CURRENT_ACTUAL_OUTPUT
 }
 
 function to_output {
