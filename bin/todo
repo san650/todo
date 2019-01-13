@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+# Delete empty files from the DB
+function cleanup {
+  # is file and not is bigger than 0 bytes
+  if [ -f "$WRITE_FILE" -a ! -s "$WRITE_FILE" ]; then
+    rm $WRITE_FILE
+  fi
+}
+
+trap cleanup EXIT
+
 COMMAND="$1"
 shift
 

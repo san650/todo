@@ -4,7 +4,7 @@
 
 TEST_INDEX="$1"
 STATUS_EXIT=0
-TMP=
+TODO_DB_PATH=
 TMP_OUTPUT=
 TODO="$(pwd)/bin/todo"
 TEST_COUNTER=0
@@ -24,11 +24,11 @@ function plan {
 }
 
 function todo {
-  TODO_PATH="$TMP" $TODO $@
+  TODO_PATH="$TODO_DB_PATH" $TODO $@
 }
 
 function cleanup {
-  rm -rf "$TMP"
+  rm -rf "$TODO_DB_PATH"
   rm -rf "$TMP_OUTPUT"
 }
 
@@ -67,10 +67,10 @@ function spec {
     return
   fi
 
-  TMP=$(mktemp -d -t todo-test-XXXXXXX)
+  TODO_DB_PATH=$(mktemp -d -t todo-test-XXXXXXX)
   TMP_OUTPUT="$(mktemp -d -t todo-test-output-XXXXXXX)/output"
   CURRENT_TEST="$1"
-  EXPECTED_OUTPUT="$TMP/test-$TEST_COUNTER-expected-output"
+  EXPECTED_OUTPUT="$TODO_DB_PATH/test-$TEST_COUNTER-expected-output"
   ACTUAL_OUTPUT_FILE_FILE="$TMP_OUTPUT/test-$TEST_COUNTER-actual-output"
   mkdir -p "$TMP_OUTPUT"
 }
@@ -326,6 +326,16 @@ to_output << EOT
 
 
 # Project: default ~
+EOT
+
+spec "cleanup empty files from the DB"
+expect << EOT
+TODO_PROJECT=foo todo
+[ -f "$TODO_DB_PATH/foo" ] && echo "file exist"
+EOT
+to_output << EOT
+
+# Project: foo ~
 EOT
 
 finish
