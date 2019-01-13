@@ -303,4 +303,29 @@ to_output << EOT
 default
 EOT
 
+spec "branch command shows To Do items for current branch"
+REPO=$(mktemp -d -t project-XXXXXXX)
+expect << EOT
+cd "$REPO" && git init --quiet
+cd "$REPO" && git checkout -b another-branch --quiet
+cd "$REPO" && todo --branch add 'foo'
+cd "$REPO" && todo --branch
+cd "$REPO" && todo -b
+cd "$REPO" && todo
+EOT
+to_output << EOT
+
+# Project: another-branch ~
+
+     1	- [ ] foo
+
+
+# Project: another-branch ~
+
+     1	- [ ] foo
+
+
+# Project: default ~
+EOT
+
 finish

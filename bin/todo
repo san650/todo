@@ -6,8 +6,17 @@ shift
 DEFAULT=default
 FOLDER=${TODO_PATH:-$HOME/.todo}
 PROJECT=${TODO_PROJECT:-$DEFAULT}
-WRITE_FILE="$FOLDER/$PROJECT"
 FILTER="$TODO_FILTER"
+WRITE_FILE="$FOLDER/$PROJECT"
+
+if [ "$COMMAND" == "--branch" -o "$COMMAND" == "-b" ]; then
+  # Get current git branch
+  # PROJECT=$(git rev-parse --abbrev-ref HEAD) # This version prints HEAD if the repo is just initialized
+  PROJECT=$(git symbolic-ref --short HEAD)
+  WRITE_FILE="$FOLDER/$PROJECT"
+  COMMAND="$1"
+  shift
+fi
 
 function print_header
 {
