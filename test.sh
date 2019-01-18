@@ -127,7 +127,7 @@ to_output << EOT
 
 EOT
 
-spec "add one todo item"
+spec "add command: adds one todo item"
 expect << EOT
 todo add foo
 todo
@@ -139,7 +139,7 @@ to_output << EOT
      1	- [ ] foo
 EOT
 
-spec "add multiple items"
+spec "add command: adds multiple items"
 expect << EOT
 todo add foo
 todo add bar
@@ -155,7 +155,7 @@ to_output << EOT
      3	- [ ] baz
 EOT
 
-spec "can mark a todo as done"
+spec "done command: can mark a todo as done"
 expect << EOT
 todo add foo
 todo add bar
@@ -171,7 +171,7 @@ to_output << EOT
      3	- [ ] baz
 EOT
 
-spec "can undone a todo"
+spec "undone command: can undone a todo"
 expect << EOT
 todo add foo
 todo add bar
@@ -189,7 +189,7 @@ to_output << EOT
      3	- [ ] baz
 EOT
 
-spec "shows all todos"
+spec "all command: shows all todos"
 expect << EOT
 todo add foo
 todo add bar
@@ -213,7 +213,31 @@ to_output << EOT
 
 EOT
 
-spec "filters to do list"
+spec "all command: filter To Do items with TODO_FILTER env var"
+expect << EOT
+todo add foo
+todo add bar
+todo done 2
+TODO_PROJECT=my-pet-project todo add foo
+TODO_PROJECT=my-pet-project todo add bar
+TODO_PROJECT=my-pet-project todo done 1
+TODO_FILTER=foo todo all
+EOT
+to_output << EOT
+
+# Project: default ~
+# Filtering by: foo
+
+     1	- [ ] foo
+
+# Project: my-pet-project ~
+# Filtering by: foo
+
+     1	- [x] foo
+
+EOT
+
+spec "filter command: filters to do list"
 expect << EOT
 todo add foo
 todo add bar
@@ -229,7 +253,7 @@ to_output << EOT
      3	- [ ] baz
 EOT
 
-spec "filter returns error when no param"
+spec "filter command: filter returns error when no param"
 expect << EOT
 todo filter
 EOT
@@ -238,7 +262,7 @@ ERROR: expected filter param
 e.g. todo filter foo
 EOT
 
-spec "filters to do list with TODO_FILTER env var"
+spec "TODO_FILTER env var: filters to do list "
 expect << EOT
 todo add foo
 todo add bar
@@ -254,7 +278,7 @@ to_output << EOT
      3	- [ ] baz
 EOT
 
-spec "edit todo inline"
+spec "edit command: edits todo inline"
 expect << EOT
 todo add foo
 todo add bar
@@ -271,7 +295,7 @@ to_output << EOT
      3	- [ ] baz
 EOT
 
-spec "uses alternate project with TODO_PROJECT"
+spec "TODO_PROJECT env var: uses alternate project"
 expect << EOT
 todo add foo
 TODO_PROJECT=alternate-project todo add bar
@@ -284,7 +308,7 @@ to_output << EOT
      1	- [ ] bar
 EOT
 
-spec "deletes a project"
+spec "delete command: deletes a project"
 expect << EOT
 TODO_PROJECT=alternate-project todo add bar
 todo delete alternate-project
@@ -294,7 +318,7 @@ to_output << EOT
 default
 EOT
 
-spec "deletes a project doesn't fail if project doesn't exist"
+spec "delete command: deletes a project doesn't fail if project doesn't exist"
 expect << EOT
 todo delete alternate-project
 todo projects
@@ -303,7 +327,7 @@ to_output << EOT
 default
 EOT
 
-spec "branch command shows To Do items for current branch"
+spec "--branch modifier: shows To Do items for current branch"
 REPO=$(mktemp -d -t project-XXXXXXX)
 expect << EOT
 cd "$REPO" && git init --quiet
@@ -336,6 +360,50 @@ EOT
 to_output << EOT
 
 # Project: foo ~
+EOT
+
+spec "pending command: shows pending To Do items"
+expect << EOT
+todo add foo
+todo add bar
+todo done 2
+TODO_PROJECT=my-pet-project todo add foo
+TODO_PROJECT=my-pet-project todo add bar
+TODO_PROJECT=my-pet-project todo done 1
+todo pending
+EOT
+to_output << EOT
+
+# Project: default ~
+
+     1	- [ ] foo
+
+# Project: my-pet-project ~
+
+     2	- [ ] bar
+
+EOT
+
+spec "pending command: filter pending To Do items with TODO_FILTER env var"
+expect << EOT
+todo add foo
+todo add bar
+todo done 2
+TODO_PROJECT=my-pet-project todo add foo
+TODO_PROJECT=my-pet-project todo add bar
+TODO_PROJECT=my-pet-project todo done 1
+TODO_FILTER=foo todo pending
+EOT
+to_output << EOT
+
+# Project: default ~
+# Filtering by: foo
+
+     1	- [ ] foo
+
+# Project: my-pet-project ~
+# Filtering by: foo
+
 EOT
 
 finish

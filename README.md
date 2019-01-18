@@ -40,6 +40,7 @@ $
 | `edit [n] [message]` | Change ToDo item number `n` message with `message`        |
 | `done [n]`           | Mark ToDo item number `n` as done                         |
 | `undone [n]`         | Mark ToDo item number `n` as pending                      |
+| `pending`            | Show all pending To Do items                              |
 | `projects`           | List all projects                                         |
 | `delete [project]`   | Delete a project and all to do items it contains          |
 | `raw`                | Prints current project file                               |
@@ -90,7 +91,7 @@ file.
 ```sh
 function _todo {
   local cur=${COMP_WORDS[COMP_CWORD]}
-  local options='add all delete done edit filter help projects raw undone'
+  local options='add all delete done edit filter help pending projects raw undone'
 
   COMPREPLY=( $(compgen -W "$options" -- $cur) )
 }
