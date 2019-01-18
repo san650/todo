@@ -44,6 +44,7 @@ $
 | `delete [project]`   | Delete a project and all to do items it contains          |
 | `raw`                | Prints current project file                               |
 | `help`               | Show help                                                 |
+| `--branch` `-b`      | Uses current git branch as ToDo project                   |
 
 ## Configuration options
 
