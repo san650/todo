@@ -39,8 +39,22 @@ function print_all
   for project in $(list_projects); do
     print_header "$project"
     echo
-    cat -n "$FOLDER/$project"
+    cat -n "$FOLDER/$project" # | grep "$FILTER"
   done
+
+  echo # empty line at the bottom
+}
+
+function print_all_pending
+{
+  for project in $(list_projects); do
+    print_header "$project"
+    echo
+
+    cat -n "$FOLDER/$project" | sed -n '/- \[ \]/p' # | grep "$FILTER"
+  done
+
+  echo # empty line at the bottom
 }
 
 function print_pending
@@ -162,7 +176,6 @@ case $COMMAND in
     ;;
   all)
     print_all
-    echo # empty line at the bottom
     ;;
   "done")
     sed -i.bak "$1s/\[ \]/[x]/" "$WRITE_FILE"
@@ -201,6 +214,9 @@ case $COMMAND in
     cat "$WRITE_FILE"
     ;;
 
+  pending)
+    print_all_pending
+    ;;
   projects)
     list_projects
     ;;

@@ -338,4 +338,26 @@ to_output << EOT
 # Project: foo ~
 EOT
 
+spec "shows pending To Do items"
+expect << EOT
+todo add foo
+todo add bar
+todo done 2
+TODO_PROJECT=my-pet-project todo add foo
+TODO_PROJECT=my-pet-project todo add bar
+TODO_PROJECT=my-pet-project todo done 1
+todo pending
+EOT
+to_output << EOT
+
+# Project: default ~
+
+     1	- [ ] foo
+
+# Project: my-pet-project ~
+
+     2	- [ ] bar
+
+EOT
+
 finish
