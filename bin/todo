@@ -38,8 +38,13 @@ function print_all
 {
   for project in $(list_projects); do
     print_header "$project"
+    if [ ! -z "$FILTER" ]; then
+      echo "# Filtering by: $FILTER"
+    fi
+
     echo
-    cat -n "$FOLDER/$project" # | grep "$FILTER"
+
+    cat -n "$FOLDER/$project" | grep "$FILTER"
   done
 
   echo # empty line at the bottom
@@ -49,9 +54,13 @@ function print_all_pending
 {
   for project in $(list_projects); do
     print_header "$project"
+    if [ ! -z "$FILTER" ]; then
+      echo "# Filtering by: $FILTER"
+    fi
+
     echo
 
-    cat -n "$FOLDER/$project" | sed -n '/- \[ \]/p' # | grep "$FILTER"
+    cat -n "$FOLDER/$project" | sed -n '/- \[ \]/p' | grep "$FILTER"
   done
 
   echo # empty line at the bottom
