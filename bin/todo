@@ -153,6 +153,7 @@ function print_help
         todo projects           - List existing projects
         todo delete [project]   - Delete a project and all to do items it contains
         todo raw                - Shows the raw DB file
+        todo comments           - Print FIXME and TODO comments in the current git repo
 
     ENV VARS
 
@@ -234,6 +235,9 @@ case $COMMAND in
     ;;
   delete)
     delete "$1"
+    ;;
+  comments)
+    git grep -n -e 'TODO:' --or -e 'FIXME:'
     ;;
   *)
     echo "Error: command '$COMMAND' unknown"
