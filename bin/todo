@@ -22,7 +22,7 @@ WRITE_FILE="$FOLDER/$PROJECT"
 if [ "$COMMAND" == "--branch" -o "$COMMAND" == "-b" ]; then
   # Get current git branch
   # PROJECT=$(git rev-parse --abbrev-ref HEAD) # This version prints HEAD if the repo is just initialized
-  PROJECT=$(git symbolic-ref --short HEAD)
+  PROJECT=$(git symbolic-ref --short HEAD | sed 's/\//-/')
   WRITE_FILE="$FOLDER/$PROJECT"
   COMMAND="$1"
   shift
