@@ -1,6 +1,8 @@
 # todo
 [![Build Status](https://travis-ci.org/san650/todo.svg?branch=master)](https://travis-ci.org/san650/todo)
 
+![foo](./chart-hand.jpg)
+
 Simple bash to do app for keeping track of pending tasks.
 
 ## SYNOPSIS
