@@ -239,6 +239,9 @@ case $COMMAND in
   comments)
     git grep -n -e 'TODO:' --or -e 'FIXME:'
     ;;
+  file)
+    echo "$WRITE_FILE"
+    ;;
   *)
     echo "Error: command '$COMMAND' unknown"
     print_help
