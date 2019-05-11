@@ -1,0 +1,3 @@
+[submodule "deps/bashtap"]
+	path = deps/bashtap
+	url = https://github.com/san650/bashtap
